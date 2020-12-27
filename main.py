@@ -10,8 +10,16 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
+timers = None
 
-# ---------------------------- TIMER RESET ------------------------------- # 
+
+# ---------------------------- TIMER RESET ------------------------------- #
+def reset():
+    window.after_cancel(timers)
+    canvas.itemconfig(canvas_text, text="00:00")
+    timer_label.config(text="Timer")
+    check_label.config(text="")
+
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
@@ -43,9 +51,14 @@ def count_down(time_needed):
         count_sec = f"0{count_sec}"
     canvas.itemconfig(canvas_text, text=f"{count_min}:{count_sec}")
     if time_needed > 0:
-        window.after(1000, count_down, time_needed-1)
+        global timers
+        timers = window.after(1000, count_down, time_needed-1)
     else:
         timer()
+        check = ""
+        for _ in range(math.floor(reps/2)):
+            check += "✔"
+            check_label.config(text=check)
 
 
 # ---------------------------- UI SETUP ------------------------------- #
@@ -53,8 +66,8 @@ window = Tk()
 window.title("Pomorodo")
 window.config(padx=100, pady=50, bg=YELLOW)
 
-timer_label = Label(bg=YELLOW)
-timer_label.config(font=(FONT_NAME, 50, "bold"), fg=GREEN)
+timer_label = Label(text="Timer", bg=YELLOW)
+timer_label.config(font=(FONT_NAME, 30), fg=GREEN)
 timer_label.grid(column=2, row=1)
 
 canvas = Canvas(bg=YELLOW, width=200, height=224, highlightthickness=0)
@@ -68,12 +81,12 @@ start_button = Button(text="Start", font=(FONT_NAME, 10, "bold"), highlightthick
 start_button.config(padx=3, pady=3)
 start_button.grid(column=1, row=3)
 
-check_label = Label(text="✔", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 10, "bold"))
+check_label = Label(fg=GREEN, bg=YELLOW, font=(FONT_NAME, 10, "bold"))
 check_label.config(padx=5, pady=5)
 check_label.grid(column=2, row=4)
 
 
-reset_button = Button(text="Reset", font=(FONT_NAME, 10, "bold"), highlightthickness=0)
+reset_button = Button(text="Reset", font=(FONT_NAME, 10, "bold"), highlightthickness=0, command=reset)
 reset_button.config(padx=3, pady=3)
 reset_button.grid(column=3, row=3)
 
